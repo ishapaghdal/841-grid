@@ -3,7 +3,11 @@ import Header from "./Header";
 import { ContributionGraph } from "./components/contribution-graph";
 
 function App() {
-  const [isDark, setIsDark] = useState(false);
+  const [isDark, setIsDark] = useState(true);
+
+  useEffect(() => {
+    document.documentElement.classList.add("dark");
+  }, []);
 
   useEffect(() => {
     if (isDark) {
