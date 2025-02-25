@@ -18,6 +18,9 @@ module.exports = {
     },
     extend: {
       gridTemplateColumns: {
+        15: "repeat(15, minmax(0, 1fr))",
+        20: "repeat(20, minmax(0, 1fr))",
+        25: "repeat(25, minmax(0, 1fr))",
         30: "repeat(30, minmax(0, 1fr))",
       },
       colors: {
@@ -77,5 +80,4 @@ module.exports = {
     },
   },
   plugins: [require("tailwindcss-animate")],
-}
-
+};

@@ -1,56 +1,134 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import {
+  ContributionDay,
+  ContributionData,
+  ContributionLevel,
+} from "../types/contribution";
 
-type ContributionLevel = 0 | 1 | 2 | 3 | 4;
-
-interface ContributionDay {
-  level: ContributionLevel;
-  amount: number;
-}
-
-const generateMockData = (): ContributionDay[] => {
-  return Array.from({ length: 900 }, () => {
-    const level = Math.floor(Math.random() * 5) as ContributionLevel;
-    return {
-      level,
-      amount: level * 1000, // $1000 per level
-    };
-  });
+// Import JSON data
+const contributionsData = {
+  contributions: [
+    {
+      index: 50,
+      amount: 2000,
+      source: "Freelance Project",
+    },
+    {
+      index: 150,
+      amount: 3000,
+      source: "YouTube Revenue",
+    },
+    {
+      index: 300,
+      amount: 2000,
+      source: "Consulting Work",
+    },
+  ],
 };
 
-const getLevelColor = (level: ContributionLevel, isDark: boolean): string => {
-  const lightColors = [
-    "bg-green-50 hover:bg-green-100 border-2 border-green-100/50",
-    "bg-green-200 hover:bg-green-300 border-2 border-green-300/50",
-    "bg-green-300 hover:bg-green-400 border-2 border-green-400/50",
-    "bg-green-400 hover:bg-green-500 border-2 border-green-500/50",
-    "bg-green-500 hover:bg-green-600 border-2 border-green-600/50",
-  ];
+const calculateLevel = (amount: number): ContributionLevel => {
+  if (amount === 0) return 0;
+  if (amount <= 1000) return 1;
+  if (amount <= 2000) return 2;
+  if (amount <= 3000) return 3;
+  return 4;
+};
 
-  const darkColors = [
-    "bg-green-900 hover:bg-green-800 border-2 border-green-800/50",
-    "bg-green-700 hover:bg-green-600 border-2 border-green-600/50",
-    "bg-green-600 hover:bg-green-500 border-2 border-green-500/50",
-    "bg-green-500 hover:bg-green-400 border-2 border-green-400/50",
-    "bg-green-400 hover:bg-green-300 border-2 border-green-300/50",
-  ];
+const generateContributionData = (
+  data: ContributionData[]
+): ContributionDay[] => {
+  // Create an array of 900 days with default values
+  const days = Array.from({ length: 900 }, (_, index) => ({
+    index,
+    amount: 0,
+    source: "No contribution",
+    level: 0 as ContributionLevel,
+  }));
 
-  return isDark ? darkColors[level] : lightColors[level];
+  // Update days with actual contribution data
+  data.forEach((contribution) => {
+    if (contribution.index < days.length) {
+      days[contribution.index] = {
+        ...contribution,
+        level: calculateLevel(contribution.amount),
+      };
+    }
+  });
+
+  return days;
+};
+
+const getRandomColor = (isDark: boolean): string => {
+  const colors = isDark
+    ? [
+        "bg-blue-600 hover:bg-blue-500 border-2 border-blue-500/50",
+        "bg-green-600 hover:bg-green-500 border-2 border-green-500/50",
+        "bg-purple-600 hover:bg-purple-500 border-2 border-purple-500/50",
+        "bg-pink-600 hover:bg-pink-500 border-2 border-pink-500/50",
+        "bg-yellow-600 hover:bg-yellow-500 border-2 border-yellow-500/50",
+        "bg-red-600 hover:bg-red-500 border-2 border-red-500/50",
+        "bg-indigo-600 hover:bg-indigo-500 border-2 border-indigo-500/50",
+        "bg-teal-600 hover:bg-teal-500 border-2 border-teal-500/50",
+      ]
+    : [
+        "bg-blue-400 hover:bg-blue-300 border-2 border-blue-300/50",
+        "bg-green-400 hover:bg-green-300 border-2 border-green-300/50",
+        "bg-purple-400 hover:bg-purple-300 border-2 border-purple-300/50",
+        "bg-pink-400 hover:bg-pink-300 border-2 border-pink-300/50",
+        "bg-yellow-400 hover:bg-yellow-300 border-2 border-yellow-300/50",
+        "bg-red-400 hover:bg-red-300 border-2 border-red-300/50",
+        "bg-indigo-400 hover:bg-indigo-300 border-2 border-indigo-300/50",
+        "bg-teal-400 hover:bg-teal-300 border-2 border-teal-300/50",
+      ];
+
+  return colors[Math.floor(Math.random() * colors.length)];
+};
+
+const getLevelColor = (day: ContributionDay, isDark: boolean): string => {
+  if (day.amount === 0) {
+    return isDark
+      ? "bg-gray-800 hover:bg-gray-700 border-2 border-gray-700/50"
+      : "bg-gray-200 hover:bg-gray-100 border-2 border-gray-300/50";
+  }
+
+  return getRandomColor(isDark);
 };
 
 export function ContributionGraph() {
-  const [contributionData] = useState<ContributionDay[]>(generateMockData());
+  const [contributionData, setContributionData] = useState<ContributionDay[]>(
+    []
+  );
   const isDark = document.documentElement.classList.contains("dark");
 
+  useEffect(() => {
+    // Fetch the JSON data
+    fetch("/src/data/contributions.json")
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Fetched data:", data);
+        const processedData = generateContributionData(data.contributions);
+        setContributionData(processedData);
+      })
+      .catch((error) => {
+        console.error("Error loading contributions:", error);
+        // Fallback to hardcoded data if fetch fails
+        const processedData = generateContributionData(
+          contributionsData.contributions
+        );
+        setContributionData(processedData);
+      });
+  }, []);
+
   return (
-    <div className="w-full flex justify-center items-center">
-      <div className="inline-block p-6 rounded-2xl bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm shadow-xl dark:shadow-gray-900/50">
-        <div className="grid grid-cols-30 gap-2">
-          {contributionData.map((day, index) => (
+    <div className="w-full flex justify-center items-center px-4">
+      <div className="inline-block p-4 sm:p-6 rounded-2xl bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm shadow-xl dark:shadow-gray-900/50 overflow-visible relative">
+        <div className="grid grid-cols-15 sm:grid-cols-20 md:grid-cols-25 lg:grid-cols-30 gap-1 sm:gap-2">
+          {contributionData.map((day) => (
             <div
-              key={index}
+              key={day.index}
               className={`
-                w-7 h-7 
-                rounded-xl
+                w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7
+                rounded-[35%]
                 transform hover:scale-110 
                 transition-all duration-300 ease-in-out
                 cursor-pointer 
@@ -58,28 +136,53 @@ export function ContributionGraph() {
                 hover:-translate-y-1
                 group
                 relative
-                overflow-hidden
-                ${getLevelColor(day.level, isDark)}
+                ${getLevelColor(day, isDark)}
               `}
-              title={`$${day.amount.toLocaleString()}`}
             >
               <div
-                className="
-                opacity-0 group-hover:opacity-100 
-                absolute -top-10 left-1/2 -translate-x-1/2
-                bg-gray-900 dark:bg-gray-700 
-                text-white 
-                px-2 py-1 
-                rounded-md 
-                text-xs 
-                whitespace-nowrap
-                transition-opacity duration-200
-                pointer-events-none
-                shadow-lg
-                z-10
-              "
+                className={`
+                  invisible group-hover:visible
+                  absolute
+                  -top-12
+                  left-1/2 -translate-x-1/2
+                  bg-gray-900/95 dark:bg-gray-800/95
+                  text-white 
+                  px-3 py-2 
+                  rounded-xl
+                  text-[10px] sm:text-xs
+                  whitespace-nowrap
+                  transition-all duration-200
+                  pointer-events-none
+                  shadow-xl
+                  z-[100]
+                  min-w-[120px] sm:min-w-[150px]
+                  backdrop-blur-sm
+                  border border-gray-700/50
+                `}
+                style={{
+                  transform: "translate(-50%, -100%)",
+                }}
               >
-                ${day.amount.toLocaleString()}
+                <div className="font-semibold">{day.source}</div>
+                <div className="text-gray-300">Cell #{day.index + 1}</div>
+                <div
+                  className={`font-medium ${
+                    day.amount > 0 ? "text-green-400" : "text-gray-400"
+                  }`}
+                >
+                  ${day.amount.toLocaleString()}
+                </div>
+                <div
+                  className={`
+                    absolute 
+                    -bottom-1 rotate-45
+                    left-1/2 -translate-x-1/2
+                    w-2 h-2 
+                    bg-gray-900 dark:bg-gray-800
+                    transform
+                    border-r border-b border-gray-700/50
+                  `}
+                />
               </div>
             </div>
           ))}
