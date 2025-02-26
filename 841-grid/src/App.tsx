@@ -3,6 +3,7 @@ import Header from "./components/Header";
 import { ContributionGraph } from "./components/contribution-graph";
 import { RevenueBreakdown } from "./components/revenue-breakdown";
 import { Footer } from "./components/Footer";
+import { PaymentButton } from "./components/payment-button";
 
 function App() {
   const [isDark, setIsDark] = useState(true);
@@ -27,6 +28,7 @@ function App() {
           <ContributionGraph />
         </div>
         <RevenueBreakdown />
+        <PaymentButton />
       </div>
       <Footer 
         isDark={isDark} 

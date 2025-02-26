@@ -1,12 +1,16 @@
 const express = require("express");
 const cors = require("cors");
-const stripe = require("stripe")(
-  "sk_test_51OxtidSDwlSbyHjRmqT14uNOJllqzyxhiQr0w9TjPSZZBaLzdNh1SWnqGxVVIicllR4yV2tpaCoSGqlyvLgy5Vuk00X6thHfPj"
-);
+const Razorpay = require("razorpay");
+const crypto = require("crypto");
 const app = express();
 
-app.use(cors({ origin: 'http://localhost:5173' }));
+// Initialize Razorpay with your key_id and key_secret
+const razorpay = new Razorpay({
+  key_id: "rzp_test_IlcVgSlMSz2lcS",
+  key_secret: "UCkpGzQR6SvuVd8jx0bLj8kh",
+});
 
+app.use(cors({ origin: "http://localhost:5173" }));
 app.use(express.json());
 
 app.get("/", (req, res) => {
@@ -14,39 +18,43 @@ app.get("/", (req, res) => {
 });
 
 app.post("/payment", async (req, res) => {
+  try {
+    const options = {
+      amount: 10000, // amount in smallest currency unit (paise for INR)
+      currency: "INR",
+      receipt: "order_receipt_" + Date.now(),
+    };
 
-    console.log("Inside payment");
-    
-  const product = await stripe.products.create({
-    name: "Contributor",
-  });
-  if (product) {
-    var price = await stripe.prices.create({
-      product: product.id,
-      unit_amount: 100 * 100,
-      currency: "usd",
-    });
+    const order = await razorpay.orders.create(options);
+    res.json(order);
+  } catch (error) {
+    console.error("Error creating order:", error);
+    res.status(500).json({ error: "Something went wrong" });
   }
+});
 
-  if (price.id) {
-    var session = await stripe.checkout.sessions.create({
-      line_items: [
-        {
-          price: `${price.id}`,
-          quantity: 1,
-        },
-      ],
-      mode: "payment",
-      success_url: "http://localhost:5173/",
-      cancel_url: "http://localhost:5173/",
-      customer_email: "isha@gmail.com",
-    });
+// Verify payment after successful transaction
+app.post("/verify-payment", async (req, res) => {
+  try {
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
+      req.body;
+
+    // Verify the payment signature
+    const sign = razorpay_order_id + "|" + razorpay_payment_id;
+    const expectedSign = crypto
+      .createHmac("sha256", razorpay.key_secret)
+      .update(sign.toString())
+      .digest("hex");
+
+    if (razorpay_signature === expectedSign) {
+      res.json({ success: true, message: "Payment verified successfully" });
+    } else {
+      res.status(400).json({ success: false, message: "Invalid signature" });
+    }
+  } catch (error) {
+    console.error("Error verifying payment:", error);
+    res.status(500).json({ error: "Something went wrong" });
   }
-
-//   console.log(res.json(session));
-  
-
-  res.json(session);
 });
 
 app.listen(3000, () => {
