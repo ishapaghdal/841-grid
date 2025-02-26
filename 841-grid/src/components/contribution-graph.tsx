@@ -37,8 +37,8 @@ const calculateLevel = (amount: number): ContributionLevel => {
 const generateContributionData = (
   data: ContributionData[]
 ): ContributionDay[] => {
-  // Create an array of 900 days with default values
-  const days = Array.from({ length: 900 }, (_, index) => ({
+  // Change length from 900 to 841 (29x29)
+  const days = Array.from({ length: 841 }, (_, index) => ({
     index,
     amount: 0,
     source: "No contribution",
@@ -121,13 +121,13 @@ export function ContributionGraph() {
 
   return (
     <div className="w-full flex justify-center items-center px-4">
-      <div className="inline-block p-4 sm:p-6 rounded-2xl bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm shadow-xl dark:shadow-gray-900/50 overflow-visible relative">
-        <div className="grid grid-cols-15 sm:grid-cols-20 md:grid-cols-25 lg:grid-cols-30 gap-1 sm:gap-2">
+      <div className="inline-block p-4 sm:p-6 rounded-2xl bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm shadow-xl dark:shadow-gray-900/50 relative">
+        <div className="grid grid-cols-[repeat(15,1fr)] sm:grid-cols-[repeat(20,1fr)] md:grid-cols-[repeat(25,1fr)] lg:grid-cols-[repeat(29,1fr)] gap-1 sm:gap-2">
           {contributionData.map((day) => (
             <div
               key={day.index}
               className={`
-                w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7
+                w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 lg:w-7 lg:h-7
                 rounded-[35%]
                 transform hover:scale-110 
                 transition-all duration-300 ease-in-out

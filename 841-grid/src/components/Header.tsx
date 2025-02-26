@@ -4,7 +4,7 @@ const Header = () => {
       <div className="w-full flex flex-col">
         {/* Top Banner */}
         <div className="bg-gradient-to-r from-purple-600 to-orange-500 text-white text-center py-2 font-semibold">
-          🚀 Check out my $1,000,000 journey!
+          🚀 Check out my $841K journey!
         </div>
 
         {/* Main Content */}
@@ -29,15 +29,15 @@ const Header = () => {
 
             {/* Title and Description */}
             <h1 className="text-4xl font-bold mt-6 dark:text-white">
-              My $1,000,000 Grid
+              My $8,410,000 Grid
             </h1>
-            <p className="mt-2 text-lg text-gray-700 dark:text-gray-300">
+            {/* <p className="mt-2 text-lg text-gray-700 dark:text-gray-300">
               For the{" "}
               <span className="text-purple-600 dark:text-purple-400 font-semibold">
                 One Million Dollar
               </span>{" "}
               challenge. Each square represents $1,000.
-            </p>
+            </p> */}
           </div>
         </div>
       </div>
