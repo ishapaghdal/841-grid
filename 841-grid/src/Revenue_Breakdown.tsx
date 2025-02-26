@@ -1,5 +1,3 @@
-import React from 'react'
-
 const Revenue_Breakdown = () => {
   return (
     <div>
