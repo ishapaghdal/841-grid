@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import Header from "./components/Header";
 import { ContributionGraph } from "./components/contribution-graph";
+import { RevenueBreakdown } from "./components/revenue-breakdown";
 
 function App() {
   const [isDark, setIsDark] = useState(true);
@@ -24,6 +25,7 @@ function App() {
         <div className="mt-16 w-full block">
           <ContributionGraph />
         </div>
+        <RevenueBreakdown />
 
         {/* Stylish Dark Mode Toggle */}
         <button

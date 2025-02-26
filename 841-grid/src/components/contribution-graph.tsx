@@ -12,16 +12,19 @@ const contributionsData = {
       index: 50,
       amount: 2000,
       source: "Freelance Project",
+      color: "bg-blue-600",
     },
     {
       index: 150,
       amount: 3000,
       source: "YouTube Revenue",
+      color: "bg-green-600",
     },
     {
       index: 300,
       amount: 2000,
       source: "Consulting Work",
+      color: "bg-purple-600",
     },
   ],
 };
@@ -34,18 +37,25 @@ const calculateLevel = (amount: number): ContributionLevel => {
   return 4;
 };
 
+const getLevelColor = (day: ContributionDay, isDark: boolean): string => {
+  if (day.amount === 0) {
+    return isDark ? "bg-gray-800" : "bg-gray-200";
+  }
+
+  return isDark ? day.color : day.color.replace("-600", "-400");
+};
+
 const generateContributionData = (
   data: ContributionData[]
 ): ContributionDay[] => {
-  // Change length from 900 to 841 (29x29)
   const days = Array.from({ length: 841 }, (_, index) => ({
     index,
     amount: 0,
     source: "No contribution",
     level: 0 as ContributionLevel,
+    color: "bg-gray-200",
   }));
 
-  // Update days with actual contribution data
   data.forEach((contribution) => {
     if (contribution.index < days.length) {
       days[contribution.index] = {
@@ -56,42 +66,6 @@ const generateContributionData = (
   });
 
   return days;
-};
-
-const getRandomColor = (isDark: boolean): string => {
-  const colors = isDark
-    ? [
-        "bg-blue-600 hover:bg-blue-500 border-2 border-blue-500/50",
-        "bg-green-600 hover:bg-green-500 border-2 border-green-500/50",
-        "bg-purple-600 hover:bg-purple-500 border-2 border-purple-500/50",
-        "bg-pink-600 hover:bg-pink-500 border-2 border-pink-500/50",
-        "bg-yellow-600 hover:bg-yellow-500 border-2 border-yellow-500/50",
-        "bg-red-600 hover:bg-red-500 border-2 border-red-500/50",
-        "bg-indigo-600 hover:bg-indigo-500 border-2 border-indigo-500/50",
-        "bg-teal-600 hover:bg-teal-500 border-2 border-teal-500/50",
-      ]
-    : [
-        "bg-blue-400 hover:bg-blue-300 border-2 border-blue-300/50",
-        "bg-green-400 hover:bg-green-300 border-2 border-green-300/50",
-        "bg-purple-400 hover:bg-purple-300 border-2 border-purple-300/50",
-        "bg-pink-400 hover:bg-pink-300 border-2 border-pink-300/50",
-        "bg-yellow-400 hover:bg-yellow-300 border-2 border-yellow-300/50",
-        "bg-red-400 hover:bg-red-300 border-2 border-red-300/50",
-        "bg-indigo-400 hover:bg-indigo-300 border-2 border-indigo-300/50",
-        "bg-teal-400 hover:bg-teal-300 border-2 border-teal-300/50",
-      ];
-
-  return colors[Math.floor(Math.random() * colors.length)];
-};
-
-const getLevelColor = (day: ContributionDay, isDark: boolean): string => {
-  if (day.amount === 0) {
-    return isDark
-      ? "bg-gray-800 hover:bg-gray-700 border-2 border-gray-700/50"
-      : "bg-gray-200 hover:bg-gray-100 border-2 border-gray-300/50";
-  }
-
-  return getRandomColor(isDark);
 };
 
 export function ContributionGraph() {
