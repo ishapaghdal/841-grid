@@ -11,4 +11,5 @@ export interface ContributionDay {
   level: ContributionLevel;
   amount: number;
   source: string;
+  //color
 } 
