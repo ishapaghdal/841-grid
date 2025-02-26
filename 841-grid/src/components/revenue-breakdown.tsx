@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ContributionData } from "../types/contribution";
+import contributionsData from "../data/contributions.json";
 
 interface CategoryTotal {
   source: string;
@@ -13,39 +13,32 @@ export function RevenueBreakdown() {
   const isDark = document.documentElement.classList.contains("dark");
 
   useEffect(() => {
-    // Fetch the JSON data
-    fetch("/src/data/contributions.json")
-      .then((response) => response.json())
-      .then((data: { contributions: ContributionData[] }) => {
-        const processedCategories = data.contributions.reduce<CategoryTotal[]>(
-          (acc: CategoryTotal[], curr) => {
-            const existingCategory = acc.find(
-              (cat) => cat.source === curr.source
-            );
-            if (existingCategory) {
-              existingCategory.amount += curr.amount;
-            } else {
-              acc.push({
-                source: curr.source,
-                amount: curr.amount,
-                color: isDark ? curr.color : curr.color.replace("-600", "-400"),
-              });
-            }
-            return acc;
-          },
-          []
-        );
-        setCategories(processedCategories);
-        setTotal(
-          processedCategories.reduce(
-            (sum: number, category: CategoryTotal) => sum + category.amount,
-            0
-          )
-        );
-      })
-      .catch((error) => {
-        console.error("Error loading contributions:", error);
-      });
+    const processedCategories = contributionsData.contributions.reduce(
+      (
+        acc: CategoryTotal[],
+        curr: { source: string; amount: number; color: string }
+      ) => {
+        const existingCategory = acc.find((cat) => cat.source === curr.source);
+        if (existingCategory) {
+          existingCategory.amount += curr.amount;
+        } else {
+          acc.push({
+            source: curr.source,
+            amount: curr.amount,
+            color: isDark ? curr.color : curr.color.replace("-600", "-400"),
+          });
+        }
+        return acc;
+      },
+      []
+    );
+    setCategories(processedCategories);
+    setTotal(
+      processedCategories.reduce(
+        (sum: number, category: CategoryTotal) => sum + category.amount,
+        0
+      )
+    );
   }, [isDark]);
 
   return (
