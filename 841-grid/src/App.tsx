@@ -5,6 +5,9 @@ import { RevenueBreakdown } from "./components/revenue-breakdown";
 import { Footer } from "./components/Footer";
 import { PaymentButton } from "./components/payment-button";
 
+
+
+
 function App() {
   const [isDark, setIsDark] = useState(true);
 
