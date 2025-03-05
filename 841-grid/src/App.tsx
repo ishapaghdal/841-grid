@@ -4,6 +4,9 @@ import { ContributionGraph } from "./components/contribution-graph";
 import { RevenueBreakdown } from "./components/revenue-breakdown";
 import { Footer } from "./components/Footer";
 
+
+
+
 function App() {
   const [isDark, setIsDark] = useState(true);
 
